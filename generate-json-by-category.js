@@ -158,7 +158,7 @@ function getCategory(className) {
   }
 
   for (const [prefix, category] of Object.entries(categories)) {
-    if (className.startsWith(prefix) || className.includes(`-${prefix}`)) {
+    if (className.startsWith(prefix) || className.startsWith(`-${prefix}`)) {
       return category;
     }
   }
