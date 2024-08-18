@@ -5,8 +5,8 @@ const postcss = require('postcss');
 
 // Función para convertir una regla CSS al formato JSON deseado
 function convertRule(selector, declarations) {
-  const className = selector.replace('.', '').replace(/\\/, '');
-  const props = declarations.map(d => `${d.prop}: ${d.value}!important`).join('; ');
+  const className = selector.replace('.', '').replace(/\\/g, '');
+  const props = declarations.map(d => `${d.prop}: ${d.value} !important`).join('; ');
   const value = `html body * [ƒ__${className}] { ${props} }`;
   return [className, value];
 }
@@ -14,49 +14,156 @@ function convertRule(selector, declarations) {
 // Función para determinar la categoría de una clase
 function getCategory(className) {
   const categories = {
-    'p-': 'padding',
-    'm-': 'margin',
-    'w-': 'width',
-    'h-': 'height',
-    'text-': 'typography',
-    'font-': 'typography',
-    'bg-': 'background',
-    'border-': 'border',
-    'flex-': 'flexbox',
+    // Layout
+    'container': 'layout-container',
+    'box-': 'layout-box-sizing',
+    'float-': 'layout-float',
+    'clear-': 'layout-clear',
+    'object-': 'layout-object-fit',
+    'overflow-': 'layout-overflow',
+    'overscroll-': 'layout-overscroll',
+    'position-': 'layout-position',
+    'top-': 'layout-top-right-bottom-left',
+    'right-': 'layout-top-right-bottom-left',
+    'bottom-': 'layout-top-right-bottom-left',
+    'left-': 'layout-top-right-bottom-left',
+    'visible': 'layout-visibility',
+    'invisible': 'layout-visibility',
+    'z-': 'layout-z-index',
+
+    // Flexbox & Grid
+    'flex': 'flexbox-flex',
+    'flex-': 'flexbox-flex',
     'grid-': 'grid',
-    'justify-': 'flexbox',
-    'items-': 'flexbox',
-    'space-': 'spacing',
-    'rounded-': 'border',
-    'shadow-': 'effects',
-    'opacity-': 'effects',
-    'z-': 'layout',
-    'top-': 'position',
-    'right-': 'position',
-    'bottom-': 'position',
-    'left-': 'position',
-    'overflow-': 'layout',
-    'container': 'layout',
-    'transition-': 'transitions',
-    'animate-': 'animations',
+    'grid': 'grid',
+    'gap-': 'flexbox-grid-gap',
+    'justify-': 'flexbox-grid-justify',
+    'content-': 'flexbox-grid-align',
+    'items-': 'flexbox-grid-align',
+    'self-': 'flexbox-grid-align',
+    'place-': 'flexbox-grid-place',
+    'order-': 'flexbox-grid-order',
+
+    // Spacing
+    'm-': 'spacing-margin',
+    'mx-': 'spacing-margin',
+    'my-': 'spacing-margin',
+    'mt-': 'spacing-margin',
+    'mr-': 'spacing-margin',
+    'mb-': 'spacing-margin',
+    'ml-': 'spacing-margin',
+    'p-': 'spacing-padding',
+    'px-': 'spacing-padding',
+    'py-': 'spacing-padding',
+    'pt-': 'spacing-padding',
+    'pr-': 'spacing-padding',
+    'pb-': 'spacing-padding',
+    'pl-': 'spacing-padding',
+    'space-': 'spacing-space',
+
+    // Sizing
+    'w-': 'sizing-width',
+    'min-w-': 'sizing-width',
+    'max-w-': 'sizing-width',
+    'h-': 'sizing-height',
+    'min-h-': 'sizing-height',
+    'max-h-': 'sizing-height',
+
+    // Typography
+    'font-': 'typography-font',
+    'text-': 'typography-text',
+    'tracking-': 'typography-letter-spacing',
+    'leading-': 'typography-line-height',
+    'list-': 'typography-lists',
+    'placeholder-': 'typography-placeholder',
+
+    // Backgrounds
+    'bg-': 'backgrounds',
+
+    // Borders
+    'border': 'borders',
+    'border-': 'borders',
+    'rounded': 'borders-border-radius',
+    'rounded-': 'borders-border-radius',
+
+    // Effects
+    'shadow': 'effects-box-shadow',
+    'shadow-': 'effects-box-shadow',
+    'opacity-': 'effects-opacity',
+    'mix-blend-': 'effects-mix-blend',
+    'bg-blend-': 'effects-background-blend',
+
+    // Filters
+    'filter': 'filters',
+    'blur-': 'filters',
+    'brightness-': 'filters',
+    'contrast-': 'filters',
+    'drop-shadow-': 'filters',
+    'grayscale-': 'filters',
+    'hue-rotate-': 'filters',
+    'invert-': 'filters',
+    'saturate-': 'filters',
+    'sepia-': 'filters',
+
+    // Tables
+    'table-': 'tables',
+
+    // Transitions & Animation
+    'transition': 'transitions-and-animation',
+    'transition-': 'transitions-and-animation',
+    'duration-': 'transitions-and-animation',
+    'ease-': 'transitions-and-animation',
+    'delay-': 'transitions-and-animation',
+    'animate-': 'transitions-and-animation',
+
+    // Transforms
+    'scale-': 'transforms',
+    'rotate-': 'transforms',
+    'translate-': 'transforms',
+    'skew-': 'transforms',
+    'transform': 'transforms',
+
+    // Interactivity
+    'accent-': 'interactivity',
+    'appearance-': 'interactivity',
     'cursor-': 'interactivity',
-    'focus:': 'interactivity',
-    'hover:': 'interactivity',
-    'active:': 'interactivity',
-    'sm:': 'responsive',
-    'md:': 'responsive',
-    'lg:': 'responsive',
-    'xl:': 'responsive',
-    '2xl:': 'responsive'
+    'outline-': 'interactivity',
+    'pointer-events-': 'interactivity',
+    'resize-': 'interactivity',
+    'scroll-': 'interactivity',
+    'snap-': 'interactivity',
+    'touch-': 'interactivity',
+    'select-': 'interactivity',
+    'will-change-': 'interactivity',
+
+    // SVG
+    'fill-': 'svg',
+    'stroke-': 'svg',
+
+    // Accessibility
+    'sr-': 'accessibility',
+
+    // Official Tailwind Plugins
+    'aspect-': 'aspect-ratio',
+    'line-clamp-': 'line-clamp',
   };
 
+  // Check for responsive and state variants
+  const variants = ['sm:'];
+
+  for (const variant of variants) {
+    if (className.startsWith(variant)) {
+      return `variants-${variant.slice(0, -1)}`;
+    }
+  }
+
   for (const [prefix, category] of Object.entries(categories)) {
-    if (className.startsWith(prefix)) {
+    if (className.startsWith(prefix) || className.includes(`-${prefix}`)) {
       return category;
     }
   }
 
-  return 'other';
+  return 'uncategorized';
 }
 
 // Configuración de Tailwind
@@ -64,20 +171,16 @@ const tailwindConfig = {
   content: [{
     raw: String.raw`
       <div class="
-        sm:* md:* lg:* xl:* 2xl:*
-        hover:* focus:* active:*
-        disabled:* checked:* group-hover:*
-        dark:* motion-safe:* motion-reduce:*
-        first:* last:* odd:* even:*
-        after:* before:*
-        placeholder:*
+        -inset-* -m-* -p-* -top-* -right-* -bottom-* -left-*
       "></div>
     `,
   }],
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/aspect-ratio')
+  ],
   safelist: [{pattern: /.*/}],
 };
 
