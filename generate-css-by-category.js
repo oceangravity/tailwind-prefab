@@ -7,7 +7,7 @@ const postcss = require('postcss');
 function convertRule(selector, declarations) {
   const className = selector.replace('.', '').replace(/\\/g, '');
   const props = declarations.map(d => `${d.prop}: ${d.value} !important`).join('; ');
-  const value = `html body * ["ƒ__${className}"] { ${props} }`;
+  const value = `html body * [ø="${className}"] { ${props} }`;
   return [className, value];
 }
 
